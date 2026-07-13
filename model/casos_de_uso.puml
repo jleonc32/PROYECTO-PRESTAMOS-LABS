@@ -1,0 +1,33 @@
+@startuml
+left to right direction
+
+actor Estudiante
+actor Administrador
+
+rectangle "Sistema de Préstamos de Implementos" {
+  usecase "Iniciar sesión" as UC1
+  usecase "Consultar catálogo de implementos" as UC2
+  usecase "Solicitar préstamo de implemento\n(Computadoras, libros, tubos, etc.)" as UC3
+  usecase "Consultar historial de préstamos" as UC4
+  
+  usecase "Gestionar usuarios" as UC5
+  usecase "Gestionar inventario de implementos\n(Altas, bajas y edición)" as UC6
+  usecase "Aprobar o rechazar solicitudes" as UC7
+  usecase "Registrar devolución de implementos" as UC8
+  usecase "Generar reportes de préstamos" as UC9
+}
+
+' Relaciones del Estudiante
+Estudiante --> UC1
+Estudiante --> UC2
+Estudiante --> UC3
+Estudiante --> UC4
+
+' Relaciones del Administrador
+Administrador --> UC1
+Administrador --> UC5
+Administrador --> UC6
+Administrador --> UC7
+Administrador --> UC8
+Administrador --> UC9
+@enduml

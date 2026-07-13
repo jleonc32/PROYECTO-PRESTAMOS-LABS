@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel de Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow p-5 border-0 rounded-3 bg-white">
+                <i class="bi bi-person-workspace text-success mb-3" style="font-size: 4rem;"></i>
+                <h2 class="fw-bold text-dark">¡Bienvenido a tu Panel de Usuario!</h2>
+                <p class="text-muted mt-2">Desde aquí podrás gestionar tus solicitudes de préstamos de equipos de laboratorio y revisar tus estados.</p>
+                <hr class="my-4">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="{% url 'crear_prestamo' %}" class="btn btn-success px-4 py-2 fw-semibold">Solicitar Préstamo</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-secondary px-4 py-2">Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

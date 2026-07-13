@@ -1,0 +1,15 @@
+# Archivos compilados
+__pycache__/
+*.pyc
+
+# Entornos virtuales
+.venv/
+venv/
+
+# Archivos estáticos de Django
+staticfiles/
+static_root/
+
+# Base de datos local y variables de entorno
+db.sqlite3
+.env

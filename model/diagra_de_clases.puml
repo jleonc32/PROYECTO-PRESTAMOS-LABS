@@ -1,0 +1,52 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Usuario {
+  - id: int
+  - cedula: String
+  - nombre: String
+  - correo: String
+  - password: String
+  - rol: String
+  + login()
+  + logout()
+}
+
+class Categoria {
+  - id: int
+  - nombre: String
+  - descripcion: String
+  + registrar()
+  + editar()
+}
+
+class Implemento {
+  - id: int
+  - codigo_inventario: String
+  - nombre: String
+  - descripcion: String
+  - estado: String
+  + registrar()
+  + actualizarEstado()
+  + verDetalles()
+}
+
+class Prestamo {
+  - id: int
+  - fecha_solicitud: Date
+  - fecha_prestamo: Date
+  - fecha_devolucion_esperada: Date
+  - fecha_devolucion_real: Date
+  - estado: String
+  + solicitar()
+  + aprobar()
+  + rechazar()
+  + registrarDevolucion()
+}
+
+' Relaciones
+Usuario "1" -- "0..*" Prestamo : realiza >
+Implemento "1" -- "0..*" Prestamo : incluye >
+Categoria "1" -- "0..*" Implemento : clasifica >
+
+@enduml

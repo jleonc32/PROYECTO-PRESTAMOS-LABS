@@ -1,0 +1,32 @@
+@startuml
+autonumber
+actor Estudiante
+participant "Sistema (Django)" as Sistema
+participant "Base de Datos (MySQL)" as BD
+
+== Autenticación ==
+Estudiante -> Sistema : Iniciar sesión (correo, password)
+activate Sistema
+Sistema -> BD : Verificar credenciales y rol de usuario
+activate BD
+BD --> Sistema : Usuario válido (Rol: Estudiante)
+deactivate BD
+Sistema --> Estudiante : Acceso concedido / Token de sesión
+deactivate Sistema
+
+== Solicitud de Préstamo de Implemento ==
+Estudiante -> Sistema : Solicitar préstamo de implemento\n(id_implemento, fecha_entrega)
+activate Sistema
+Sistema -> BD : Consultar disponibilidad del implemento
+activate BD
+BD --> Sistema : Estado del implemento: "Disponible"
+deactivate BD
+
+Sistema -> BD : Registrar préstamo (id_usuario, id_implemento, fechas)\ny cambiar estado del implemento a "Prestado"
+activate BD
+BD --> Sistema : Confirmación de almacenamiento (Transacción exitosa)
+deactivate BD
+
+Sistema --> Estudiante : Mostrar confirmación de préstamo con éxito
+deactivate Sistema
+@enduml

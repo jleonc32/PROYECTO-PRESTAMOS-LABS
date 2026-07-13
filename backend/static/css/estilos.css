@@ -1,0 +1,129 @@
+/* --- CONFIGURACIÓN GENERAL --- */
+body {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    background-color: #f8fafc;
+    color: #1f2937;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.h-screen {
+    min-height: 100vh;
+}
+
+.bg-light-unemi {
+    background-color: #f8fafc;
+}
+
+/* ---------- SIDEBAR ---------- */
+
+.sidebar {
+    width: 260px;
+    background-color: #043927;
+    min-height: 100vh;
+    z-index: 100;
+}
+
+.logo-icon-bg {
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, .15);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar .nav-link {
+    color: #cbd5e1;
+    padding: .75rem 1rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: .2s;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, .08);
+}
+
+.sidebar .nav-link.active {
+    color: #fff !important;
+    background: rgba(255, 255, 255, .12) !important;
+}
+
+.user-avatar-text {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+}
+
+.btn-logout-unemi {
+    border: none;
+    background: transparent;
+    color: #fca5a5;
+}
+
+.btn-logout-unemi:hover {
+    color: #fff;
+}
+
+/* ---------- CONTENIDO ---------- */
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.topbar {
+    height: 64px;
+    flex-shrink: 0;
+}
+
+main .container-fluid {
+    flex: 1;
+    padding: 1.5rem !important;
+}
+
+/* ---------- TARJETAS ---------- */
+
+.card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 .125rem .5rem rgba(0, 0, 0, .08);
+}
+
+/* ---------- BOTONES ---------- */
+
+.btn-unemi {
+    background: #043927;
+    border-color: #043927;
+    color: #fff;
+}
+
+.btn-unemi:hover {
+    background: #032b1e;
+    border-color: #032b1e;
+}
+
+.hover-bg-light:hover {
+    background: #f8fafc;
+}
+
+/* ---------- FORMULARIOS ---------- */
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #043927;
+    box-shadow: none;
+}
