@@ -14,6 +14,8 @@ from reportlab.lib import colors
 from .models import Prestamo, Devolucion
 from .forms import PrestamoForm, DevolucionForm
 
+from django.http import JsonResponse
+
 
 @login_required
 def lista_prestamos(request):
@@ -263,3 +265,41 @@ def api_mis_prestamos(request):
     
     # Convertimos a lista y lo enviamos como JSON
     return JsonResponse(list(prestamos), safe=False)
+
+from django.http import JsonResponse
+# Asegúrate de que el modelo Prestamo ya esté importado arriba
+
+from django.http import JsonResponse
+from .models import Prestamo # Asegúrate de que el modelo esté importado
+
+def api_notificaciones(request):
+    # Si no hay usuario logueado, devolvemos 0
+    if not request.user.is_authenticated:
+        return JsonResponse({'cantidad': 0, 'alertas': []})
+
+    # Verificamos si es administrador
+    if request.user.groups.filter(name="Administrador").exists() or request.user.is_superuser:
+        alertas_db = Prestamo.objects.filter(estado="Activo").order_by('-id')[:5]
+        es_admin = True
+    else:
+        # Si es usuario normal
+        alertas_db = Prestamo.objects.filter(usuario=request.user, estado="Activo").order_by('fecha_devolucion')
+        es_admin = False
+
+    # Armamos una lista con los datos listos para Javascript
+    datos_alertas = []
+    for alerta in alertas_db:
+        # Formateamos la fecha para que se vea bonita (ej: 16/07/2026 02:30 PM)
+        fecha_str = alerta.fecha_devolucion.strftime("%d/%m/%Y %I:%M %p") if alerta.fecha_devolucion else "Sin fecha límite"
+        
+        datos_alertas.append({
+            'usuario': alerta.usuario.username,
+            'equipo': alerta.equipo.nombre,
+            'fecha': fecha_str
+        })
+
+    return JsonResponse({
+        'cantidad': alertas_db.count(),
+        'alertas': datos_alertas,
+        'es_admin': es_admin
+    })

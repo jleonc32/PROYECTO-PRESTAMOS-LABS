@@ -9,4 +9,5 @@ urlpatterns = [
     path("reporte/pdf/", views.reporte_prestamos_pdf, name="reporte_prestamos_pdf"),
     path('devolver/<int:prestamo_id>/', views.procesar_devolucion, name='procesar_devolucion'), 
     path('api/mis-prestamos/', views.api_mis_prestamos, name='api_mis_prestamos'),
+    path('api/notificaciones/', views.api_notificaciones, name='api_notificaciones'),
 ]

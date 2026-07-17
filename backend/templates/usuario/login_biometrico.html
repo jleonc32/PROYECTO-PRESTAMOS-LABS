@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Biométrica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .biometric-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+        }
+        .icon-container svg {
+            width: 80px;
+            height: 80px;
+            color: #0d6efd;
+            margin-bottom: 20px;
+        }
+        .btn-biometric {
+            border-radius: 25px;
+            padding: 10px 30px;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="biometric-card">
+        <div class="icon-container">
+            <!-- Icono de Huella/Rostro -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+            </svg>
+        </div>
+        
+        <h2 class="mb-3" style="color: #002b5e; font-weight: bold;">Iniciar Sesión</h2>
+        <p class="text-muted mb-4">Usa el lector de huellas o reconocimiento facial de este dispositivo para entrar a tu cuenta rápidamente.</p>
+        
+        <!-- Token CSRF oculto necesario para la petición POST a Django -->
+        <form id="csrf-form">
+            {% csrf_token %}
+        </form>
+
+        <button id="btn-login" class="btn btn-primary btn-biometric">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-lock me-2" viewBox="0 0 16 16">
+                <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.462.545 7.15 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
+                <path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z"/>
+            </svg>
+            Intentar iniciar sesión
+        </button>
+
+        <div id="mensaje-estado" class="mt-3 text-danger fw-bold" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Funciones utilitarias para convertir base64url a Uint8Array (Requerido por el navegador)
+        function base64urlToUint8Array(base64url) {
+            const padding = '='.repeat((4 - base64url.length % 4) % 4);
+            const base64 = (base64url + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        // Función para convertir de ArrayBuffer a base64url (Para enviar a Django)
+        function arrayBufferToBase64url(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        }
+
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-login');
+            const mensajeDiv = document.getElementById('mensaje-estado');
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Verificando rostro/huella...';
+            mensajeDiv.style.display = 'none';
+            mensajeDiv.classList.remove('text-success', 'text-danger');
+
+            try {
+                // 1. Pedir el reto al servidor
+                const respuestaReto = await fetch("{% url 'generar_reto_login' %}");
+                if (!respuestaReto.ok) {
+                    const err = await respuestaReto.json();
+                    throw new Error(err.error || 'Error al generar el reto');
+                }
+                const opcionesLogin = await respuestaReto.json();
+
+                // 2. Formatear las opciones para el navegador (Corregido: sin .publicKey)
+                opcionesLogin.challenge = base64urlToUint8Array(opcionesLogin.challenge);
+                if (opcionesLogin.allowCredentials) {
+                    opcionesLogin.allowCredentials.forEach(cred => {
+                        cred.id = base64urlToUint8Array(cred.id);
+                    });
+                }
+
+                // 3. Activar el lector biométrico del dispositivo
+                const credencialValidada = await navigator.credentials.get({
+                    publicKey: opcionesLogin
+                });
+
+                // 4. Formatear la respuesta para enviarla limpia a nuestro backend
+                const respuestaFormateada = {
+                    id: credencialValidada.id,
+                    rawId: arrayBufferToBase64url(credencialValidada.rawId),
+                    type: credencialValidada.type,
+                    response: {
+                        authenticatorData: arrayBufferToBase64url(credencialValidada.response.authenticatorData),
+                        clientDataJSON: arrayBufferToBase64url(credencialValidada.response.clientDataJSON),
+                        signature: arrayBufferToBase64url(credencialValidada.response.signature),
+                        userHandle: credencialValidada.response.userHandle ? arrayBufferToBase64url(credencialValidada.response.userHandle) : null
+                    }
+                };
+
+                // 5. Extraer el token CSRF para la seguridad de Django
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                // 6. Enviar a Django para la verificación final
+                const verificacion = await fetch("{% url 'verificar_login_biometrico' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify(respuestaFormateada)
+                });
+
+                const resultado = await verificacion.json();
+
+                if (verificacion.ok && resultado.status === 'ok') {
+                    // ¡ÉXITO!
+                    btn.classList.replace('btn-primary', 'btn-success');
+                    btn.innerHTML = '¡Sesión Iniciada!';
+                    mensajeDiv.textContent = resultado.mensaje;
+                    mensajeDiv.classList.add('text-success');
+                    mensajeDiv.style.display = 'block';
+                    
+                    // Redirigir al dashboard después de 1 segundo
+                    // Asegúrate de cambiar "/" por la ruta real de tu sistema
+                    setTimeout(() => {
+                        window.location.href = "/"; 
+                    }, 1000);
+                } else {
+                    throw new Error(resultado.mensaje || 'Verificación fallida en el servidor');
+                }
+
+            } catch (error) {
+                console.error("Error en WebAuthn:", error);
+                btn.disabled = false;
+                btn.innerHTML = 'Intentar de nuevo';
+                mensajeDiv.textContent = 'Rechazado: ' + error.message;
+                mensajeDiv.classList.add('text-danger');
+                mensajeDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

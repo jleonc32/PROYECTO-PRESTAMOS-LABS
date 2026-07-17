@@ -9,8 +9,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
 
@@ -31,7 +30,25 @@
         .sidebar {
             background-color: var(--unemi-blue) !important;
             min-width: 260px;
+            max-width: 260px;
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+            transition: margin-left 0.3s ease-in-out;
+            z-index: 1050; 
+        }
+
+        .sidebar.toggled {
+            margin-left: -260px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                height: 100%;
+                margin-left: -260px;
+            }
+            .sidebar.toggled {
+                margin-left: 0;
+            }
         }
 
         .logo-icon-bg {
@@ -71,7 +88,7 @@
         }
 
         .btn-logout-unemi:hover {
-            background-color: #dc3545; /* Rojo de salida */
+            background-color: #dc3545;
             border-color: #dc3545;
             color: white;
         }
@@ -88,7 +105,6 @@
             background-color: #ffffff !important;
         }
 
-        /* 5. Títulos Globales */
         h1, h2, h3, .text-unemi {
             color: var(--unemi-blue);
         }
@@ -97,13 +113,12 @@
 
 <body>
 
-    <div class="d-flex vh-100 overflow-hidden">
+    <div class="d-flex vh-100 overflow-hidden position-relative">
 
         <!-- SIDEBAR -->
-        <aside class="sidebar d-flex flex-column justify-content-between p-3">
+        <aside id="sidebar" class="sidebar d-flex flex-column justify-content-between p-3">
 
             <div>
-
                 <div class="logo d-flex align-items-center gap-3 py-2 px-1 mb-4">
                     <div class="logo-icon-bg">
                         <i class="bi bi-pc-display-horizontal fs-4 text-white"></i>
@@ -128,13 +143,11 @@
                         </a>
                     </li>
 
-                    <!-- MAGIA NATIVA DE DJANGO: LEEMOS LOS GRUPOS DEL USUARIO -->
                     {% for grupo in request.user.groups.all %}
                         
                         <!-- VISTA PARA ADMINISTRADORES / PERSONAL -->
                         {% if grupo.name == "Administrador" %}
                             
-                            <!-- NUEVO: SUBMENÚ DESPLEGABLE DE EQUIPOS Y CATEGORÍAS -->
                             <li class="nav-item">
                                 <a class="nav-link d-flex align-items-center justify-content-between" 
                                    data-bs-toggle="collapse" 
@@ -148,7 +161,6 @@
                                     <i class="bi bi-chevron-down" style="font-size: 0.8rem;"></i>
                                 </a>
                                 
-                                <!-- Se mantiene abierto si estamos en alguna de las rutas de inventario -->
                                 <div class="collapse {% if request.resolver_match.url_name in 'lista_equipos,crear_equipo,editar_equipo,lista_categorias,crear_categoria' %}show{% endif %} mt-1" id="submenuEquipos">
                                     <ul class="nav flex-column ms-3 border-start border-light border-opacity-25 ps-2">
                                         <li class="nav-item">
@@ -192,6 +204,15 @@
                                 </a>
                             </li>
 
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-2" href="{% url 'estadisticas' %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill text-primary" viewBox="0 0 16 16">
+                                        <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/>
+                                    </svg>
+                                    Estadísticas
+                                </a>
+                            </li>
+
                         <!-- VISTA PARA USUARIOS NORMALES / ALUMNOS -->
                         {% elif grupo.name == "Usuario" %}
                             <li class="nav-item">
@@ -212,7 +233,6 @@
                         {% endif %}
 
                     {% empty %}
-                        <!-- Mensaje de seguridad si la cuenta por alguna razón no tiene rol -->
                         <li class="nav-item px-3 py-2 text-warning small" style="background-color: rgba(255,255,255,0.1); border-radius: 8px;">
                             <i class="bi bi-exclamation-triangle"></i> Cuenta sin rol asignado
                         </li>
@@ -223,9 +243,7 @@
             </div>
 
             <div>
-
                 <div class="d-flex align-items-center gap-3 mb-4 p-2 rounded" style="background-color: rgba(0,0,0,0.15);">
-
                     <div class="user-avatar-text bg-secondary text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; font-weight: bold;">
                         {% if request.user.username %}
                             {{ request.user.username|slice:":2"|upper }}
@@ -239,11 +257,9 @@
                             {{ request.user.username }}
                         </strong>
                         <small class="text-white-50">
-                            <!-- Mostramos el primer grupo al que pertenece -->
                             {{ request.user.groups.first.name|default:"Sin Rol" }}
                         </small>
                     </div>
-
                 </div>
 
                 <form method="post" action="{% url 'logout' %}">
@@ -253,7 +269,6 @@
                         Cerrar sesión
                     </button>
                 </form>
-
             </div>
 
         </aside>
@@ -263,24 +278,82 @@
 
             <header class="topbar border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
 
-                <button class="btn border-0 text-secondary hover-bg-light">
+                <button id="btn-toggle-sidebar" class="btn border-0 text-secondary hover-bg-light">
                     <i class="bi bi-list fs-4"></i>
                 </button>
 
                 <div class="d-flex align-items-center gap-3">
 
-                    <button class="btn border-0 position-relative text-secondary">
-                        <i class="bi bi-bell fs-5"></i>
-                        <span class="position-absolute top-2 start-75 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                            3
-                        </span>
-                    </button>
-
-                    <div class="dropdown">
-                        <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 shadow-sm rounded-pill px-3" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle text-primary"></i>
-                            <span class="fw-medium">Hola, {{ request.user.username }}</span>
+                    <!-- ============================================== -->
+                    <!-- CAMPANITA DE NOTIFICACIONES (TIEMPO REAL)      -->
+                    <!-- ============================================== -->
+                    <div class="dropdown d-inline-block">
+                        <button class="btn border-0 position-relative text-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="outline: none; box-shadow: none;">
+                            <i class="bi bi-bell fs-5"></i>
+                            
+                            <!-- Notificación dinámica de Django (carga inicial) -->
+                            <span id="badge-notificaciones" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if contador_notificaciones == 0 or not contador_notificaciones %}d-none{% endif %}" style="font-size: 0.6rem;">
+                                {{ contador_notificaciones|default:"0" }}
+                            </span>
                         </button>
+
+                        <!-- Lista que se actualizará con Javascript -->
+                        <ul id="lista-notificaciones" class="dropdown-menu dropdown-menu-end shadow" style="width: 320px;">
+                            <li><h6 class="dropdown-header">Notificaciones</h6></li>
+                            
+                            {% if contador_notificaciones == 0 or not contador_notificaciones %}
+                                <li><span class="dropdown-item text-muted">No tienes notificaciones pendientes.</span></li>
+                            {% else %}
+                                {% for alerta in alertas_notificaciones %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-wrap" href="#">
+                                            {% if es_admin_noti %}
+                                                <i class="bi bi-info-circle text-primary me-1"></i>
+                                                <strong>{{ alerta.usuario.username }}</strong> prestó el equipo <strong>{{ alerta.equipo.nombre }}</strong>.
+                                            {% else %}
+                                                <i class="bi bi-exclamation-triangle text-warning me-1"></i>
+                                                Tu préstamo de <strong>{{ alerta.equipo.nombre }}</strong> está activo. <br>
+                                                <small class="text-danger fw-bold">Devolver: {{ alerta.fecha_devolucion|date:"d/m/Y h:i A" }}</small>
+                                            {% endif %}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <!-- ============================================== -->
+
+                    <!-- Menú de Usuario Desplegable -->
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 border-0 rounded-pill px-3 py-2" type="button" id="menuUsuario" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #f8f9fa;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-person-circle" viewBox="0 0 16 16">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                            </svg>
+                            <span class="fw-semibold">Hola, {{ request.user.username }}</span>
+                        </button>
+                        
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="menuUsuario">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'vincular_huella' %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fingerprint text-primary" viewBox="0 0 16 16">
+                                        <path d="M8.06 6.5a.5.5 0 0 1 .492.731c-.132.362-.278.74-.428 1.127-.152.39-.304.79-.446 1.171a.5.5 0 0 1-.936-.35c.14-.378.293-.782.446-1.173.149-.385.295-.762.424-1.116a.5.5 0 0 1 .448-.39zm-2.736.32a.5.5 0 0 1 .632-.266c.866.34 1.488.497 2.052.559a.5.5 0 0 1-.106.994c-.5-.054-1.076-.197-1.878-.511a.5.5 0 0 1-.266-.632l-.434-.144zM10.74 5.39a.5.5 0 0 1 .489.659c-.58 2.091-1.748 3.513-3.151 4.417a.5.5 0 0 1-.54-.84c1.174-.756 2.146-1.954 2.628-3.69a.5.5 0 0 1 .574-.546zm-5.748.2a.5.5 0 0 1 .655.495c.29 2.18.995 3.393 1.95 4.092a.5.5 0 0 1-.593.805c-1.16-.855-1.97-2.28-2.3-4.733a.5.5 0 0 1 .288-.659zM8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1z"/>
+                                    </svg>
+                                    Configurar Biometría
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger" href="{% url 'logout' %}"> 
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                                        <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                                    </svg>
+                                    Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
                     </div>
 
                 </div>
@@ -299,6 +372,75 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- SCRIPT PARA EL MENÚ HAMBURGUESA -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnToggle = document.getElementById("btn-toggle-sidebar");
+            const sidebar = document.getElementById("sidebar");
+
+            if(btnToggle && sidebar) {
+                btnToggle.addEventListener("click", function() {
+                    sidebar.classList.toggle("toggled");
+                });
+            }
+        });
+    </script>
+
+    <!-- ========================================== -->
+    <!-- SCRIPT DE NOTIFICACIONES EN TIEMPO REAL    -->
+    <!-- ========================================== -->
+    <script>
+        function actualizarCampanitaRealTime() {
+            const url = "{% url 'api_notificaciones' %}?_t=" + new Date().getTime();
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // 1. Actualizar el globo rojo
+                    const badge = document.getElementById('badge-notificaciones');
+                    if (badge) {
+                        if (data.cantidad > 0) {
+                            badge.innerText = data.cantidad;
+                            badge.classList.remove('d-none');
+                        } else {
+                            badge.classList.add('d-none');
+                        }
+                    }
+
+                    // 2. Reconstruir los mensajes del menú desplegable
+                    const lista = document.getElementById('lista-notificaciones');
+                    if (lista) {
+                        let html = '<li><h6 class="dropdown-header">Notificaciones</h6></li>';
+
+                        if (data.cantidad === 0) {
+                            html += '<li><span class="dropdown-item text-muted">No tienes notificaciones pendientes.</span></li>';
+                        } else {
+                            data.alertas.forEach(alerta => {
+                                html += '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item text-wrap" href="#">';
+                                
+                                if (data.es_admin) {
+                                    html += `<i class="bi bi-info-circle text-primary me-1"></i>
+                                             <strong>${alerta.usuario}</strong> prestó el equipo <strong>${alerta.equipo}</strong>.`;
+                                } else {
+                                    html += `<i class="bi bi-exclamation-triangle text-warning me-1"></i>
+                                             Tu préstamo de <strong>${alerta.equipo}</strong> está activo. <br>
+                                             <small class="text-danger fw-bold">Devolver: ${alerta.fecha}</small>`;
+                                }
+                                
+                                html += '</a></li>';
+                            });
+                        }
+                        lista.innerHTML = html;
+                    }
+                })
+                .catch(error => console.error("Error en campanita:", error));
+        }
+
+        // Ejecutar inmediatamente y luego cada 5 segundos (5000 ms)
+        actualizarCampanitaRealTime();
+        setInterval(actualizarCampanitaRealTime, 5000);
+    </script>
 
 </body>
 
